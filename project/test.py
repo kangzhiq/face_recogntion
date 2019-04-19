@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Apr  9 16:49:30 2019
-
 Le but de ce fichier: 
 1. la détection de visages par fenêtre glissante
-
 @author: jijie liu
 """
 import numpy as np
@@ -13,8 +11,6 @@ import numpy as np
 # 0. obtenir la classifier
 from sklearn.externals import joblib
 clf = joblib.load('clf_hog_v1.pkl')
-clf_proba = joblib.load('clf_proba_v1.pkl')
-clf_svc = joblib.load('clf_svc.pkl')
 
 # 1. obtenir les images originales
 from skimage import io, util, color, transform
@@ -22,7 +18,7 @@ img_raw = []
 n_total = 500
 for i in range(n_total):
     # lire les image, et convertir RGB images aux images gray
-    im = color.rgb2gray(io.imread("project_test/test/" + "%04d"%(i+1) + ".jpg"))
+    im = color.rgb2gray(io.imread("test/" + "%04d"%(i+1) + ".jpg"))
     # Convertir les images en valeurs
     im = util.img_as_float(im)
     img_raw.append(im)
@@ -75,10 +71,10 @@ def execute_fenetre_glissante(img, nb_img):
             # Ils sont (o_h, o_l)
             img_fenetre = img[h: h + h_fixed, l: l + l_fixed]
             feature_hog = hog(img_fenetre, block_norm='L2-Hys', transform_sqrt=True)
-            x_predict = clf_svc.predict(feature_hog.reshape(1, -1))
+            x_predict = clf.predict(feature_hog.reshape(1, -1))
             if (x_predict == 1):
                 # obtenir le score de détection
-                x_predict_proba = clf_svc.decision_function(feature_hog.reshape(1, -1))
+                x_predict_proba = clf.decision_function(feature_hog.reshape(1, -1))
                 score = x_predict_proba[0]
                 # stocker les informations de la img_fenetre
                 # il faut faire attention sur la format de la première élément !
